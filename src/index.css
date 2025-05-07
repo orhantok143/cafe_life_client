@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+.cardflex {
+  @apply flex items-end justify-center w-full h-full;
+}
+body {
+  @apply bg-gray-900;
+  @apply max-w-4xl;
+  @apply mx-auto;
+}
+
+
+/* Kuyruklu yıldız animasyonu */
+@keyframes starTrail {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+    box-shadow: 0 0 6px 3px rgba(255, 255, 0, 0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: var(--trail-transform) scale(0.8);
+    box-shadow: 0 0 30px 12px rgba(255, 255, 0, 0);
+  }
+}
+.star-trail {
+  @apply fixed w-3 h-3 rounded-full z-[1000];
+  animation: starTrail 1s ease-in-out forwards;
+  transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+}
+
+

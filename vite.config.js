@@ -9,4 +9,5 @@ export default defineConfig({
     host: true, // veya '0.0.0.0'
     port: 5173, // farklı bir port da verebilirsin
   },
+  base:"/home"
 })

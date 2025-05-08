@@ -16,15 +16,59 @@ import { getFavorites } from "../utils/favoriteProducts";
 
 const MenuPage = () => {
   const cartIconRef = useRef();
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState([]); // Başlangıçta boş bir dizi
 
-  const addToCart = () => {
-    console.log("addtocart");
-    
-  };
+const addToCart = (tableId, productToAdd) => {
+  console.log(productToAdd);
+  
+  setCart((prevCart) => {
+    // Masa zaten varsa güncelle, yoksa yeni masa ekle
+    const updatedCart = [...prevCart];
+    const tableIndex = updatedCart.findIndex((t) => t.tableId === tableId);
 
-  const [selectedCategory, setSelectedCategory] = useState("food");
+    if (tableIndex !== -1) {
+      // Masa bulundu, içindeki ürünleri güncelle
+      const table = { ...updatedCart[tableIndex] };
+      const items = [...table.items];
+
+      // Aynı ürün var mı diye kontrol et
+      const existingItem = items.find(item => item.product.id === productToAdd.id);
+
+      if (existingItem) {
+        existingItem.quantity += 1; // Miktarı arttır
+      } else {
+        items.push({ product: productToAdd, quantity: 1 }); // Yeni ürün ekle
+      }
+
+      const totalPrice = items.reduce(
+        (sum, item) => sum + (item.product?.discountedPrice ? item.product?.discountedPrice : item.product?.price) * item.quantity,
+        0
+      );
+      
+
+      updatedCart[tableIndex] = { ...table, items, totalPrice };
+    } else {
+      // Masa yoksa yeni masa ve ürün oluştur
+      updatedCart.push({
+        tableId,
+        items: [{ product: productToAdd, quantity: 1 }],
+        totalPrice: productToAdd.discountedPrice,
+      });
+    }
+
+    return updatedCart;
+  });
+};
+
+console.log(cart);
+
+
+
+  const [selectedCategory, setSelectedCategory] = useState(
+    localStorage.getItem("selectedCategory") || "food"
+  );
   const handleCategoryChange = (category) => {
+    localStorage.setItem("selectedCategory", category);
     setSelectedCategory(category);
   };
 
@@ -308,10 +352,7 @@ const MenuPage = () => {
         couponProgress={{ current: 90, total: 100 }}
       />
 
-      <CategoryBar
-     
-        handleCategoryChange={handleCategoryChange}
-      />
+      <CategoryBar handleCategoryChange={handleCategoryChange} />
       {categoryData.map(
         (category, index) =>
           selectedCategory === category.category.toLowerCase() && (
@@ -329,20 +370,16 @@ const MenuPage = () => {
       )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 justify-between pb-20">
-    
-  
         {filteredProducts.slice(0).map((product) => (
-          <ProductCard 
-          addToCart={addToCart}
-          cartIconRef={cartIconRef}
-          key={product.id} 
-          product={product} 
-        
+          <ProductCard
+            addToCart={(tableId,productToAdd) => addToCart(tableId,productToAdd)}
+            cartIconRef={cartIconRef}
+            key={product.id}
+            product={product}
           />
         ))}
       </div>
       <BottomBar cartIconRef={cartIconRef} />
-     
     </div>
   );
 };

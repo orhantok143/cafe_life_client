@@ -27,7 +27,7 @@ const themeMap = {
   },
 };
 
-const ProductCard = ({ product , cartIconRef }) => {
+const ProductCard = ({ product , cartIconRef,addToCart }) => {
   const [favoritedProducts, setFavoritedProducts] = useState([]);
   const navigate = useNavigate();
   const fromRef = useRef();
@@ -41,9 +41,10 @@ const ProductCard = ({ product , cartIconRef }) => {
   }, []);
 
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (product) => {
     setStarTrigger(false); // tetikleyiciyi resetle
     setTimeout(() => setStarTrigger(true), 1); // tetikle
+    addToCart(1,product)
  
   };
 
